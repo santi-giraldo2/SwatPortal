@@ -1,0 +1,28 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">SwatPortal</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<RadzenCard Style="padding:0; border:0;">
+    <RadzenPanelMenu Style="width:auto;">
+        <RadzenPanelMenuItem Text="Home" Path="/" Icon="home"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Reporte Facturacion" Path="estoyprobando" Icon="developer_board"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Reporte Facturacion Acumulado" Path="" Icon="insights"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Maestro Contactos" Path="contactos" Icon="filter_list"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Maestro Grupo" Path="" Icon="sort"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Maestro Sucursal" Path="" Icon="list"></RadzenPanelMenuItem>
+    </RadzenPanelMenu>
+</RadzenCard>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

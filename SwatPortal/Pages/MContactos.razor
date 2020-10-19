@@ -1,0 +1,146 @@
+﻿@page "/contactos"
+@using SwatPortal.Data
+@using SwatPortal.Entidades
+@using Microsoft.EntityFrameworkCore
+@inject ContactoService contactoService
+@inject ApplicationDbContext dbContext
+
+<h3>Maestro Contactos</h3>
+
+@if (contactos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{   
+
+<AuthorizeView>
+    <NotAuthorized>
+
+        <RadzenGrid ColumnWidth="200px" AllowFiltering="true" AllowPaging="true" PageSize="10" AllowSorting="true" Data="@contactos" TItem="Contacto">
+            <Columns>
+                <RadzenGridColumn Width="100px" TItem="Contacto" Property="IdContacto" Title="Id Contacto" />
+                <RadzenGridColumn TItem="Contacto" Property="Nombre" Title="Nombre" />
+                <RadzenGridColumn TItem="Contacto" Property="Celular" Title="Celular" />
+                <RadzenGridColumn TItem="Contacto" Property="Id_ciudad" Title="ID Ciudad" />
+                <RadzenGridColumn TItem="Contacto" Property="Email1" Title="Correo Electronico" />
+            </Columns>
+        </RadzenGrid>
+    </NotAuthorized>
+
+
+    <Authorized>
+
+
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@InsertRow" />
+        <RadzenGrid @ref="contactoGrid" AllowFiltering="true" AllowPaging="true" PageSize="10" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                    Data="@contactos" TItem="Contacto">
+            <Columns>
+                <RadzenGridColumn Width="100px" TItem="Contacto" Property="IdContacto" Title="ID Contato" />
+                <RadzenGridColumn TItem="Contacto" Property="Nombre" Title="Nombre">
+                    <EditTemplate Context="contacto">
+                        <RadzenTextBox @bind-Value="contacto.Nombre" Style="width:100%; display: block" Name="Nombre" />
+                    </EditTemplate>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Contacto" Property="Celular" Title="Celular">
+                    <EditTemplate Context="contacto">
+                        <RadzenMask Mask="(***) ***-****" Pattern="[^0-9]" Placeholder="(000) 000-0000" Name="Celular" @bind-Value="contacto.Celular" Style="margin-bottom: 20px" />
+                    </EditTemplate>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Contacto" Property="Id_ciudad" Title="Id Ciudad">
+                    <EditTemplate Context="contacto">
+                        <RadzenNumeric TValue="int" @bind-Value="@contacto.Id_ciudad" Placeholder="Ingrese el Id de la Ciudad" Style="margin-bottom: 20px" />
+                    </EditTemplate>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Contacto" Property="Email1" Title="Email1">
+                    <EditTemplate Context="contacto">
+                        <RadzenTextBox @bind-Value="contacto.Email1" Style="width:100%; display: block" Name="Nombre" />
+                    </EditTemplate>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Contacto" Property="Email2" Title="Email2">
+                    <EditTemplate Context="contacto">
+                        <RadzenTextBox @bind-Value="contacto.Email2" Style="width:100%; display: block" Name="Email2" />
+                    </EditTemplate>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Contacto" Property="Estado" Title="Estado">
+                    <EditTemplate Context="contacto">
+                        <RadzenCheckBox @bind-Value="@contacto.Estado" Style="margin-bottom: 20px" TValue="bool" />
+                        <RadzenLabel Text="Estado" Component="Estado" Style="margin-left: 5px;margin-bottom: 20px" />
+                    </EditTemplate>
+                </RadzenGridColumn>
+                @*<RadzenGridColumn TItem="Contacto" Property="ciudad" Title="Ciudad">
+                    <EditTemplate Context="contacto">
+                        <RadzenTextBox @bind-Value="contacto.ciudad" Style="width:100%; display: block" Name="Ciudad" />
+                    </EditTemplate>
+                </RadzenGridColumn>*@
+                <RadzenGridColumn TItem="Contacto" Context="sampleBlazorModelsSampleOrder" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                    <Template Context="contacto">
+                        <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(contacto))">
+                        </RadzenButton>
+
+                    </Template>
+
+                    <EditTemplate Context="contacto">
+                        <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(contacto))">
+                        </RadzenButton>
+                        <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(contacto))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenGridColumn>
+
+                <RadzenGridColumn TItem="Contacto" Context="Contacto" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                    <Template Context="contacto">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => DeleteRow(contacto))">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="contacto">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => DeleteRow(contacto))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
+    </Authorized>
+</AuthorizeView>
+}
+
+@code {
+        
+
+    RadzenGrid<Contacto> contactoGrid;
+    public List<Contacto> contactos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        contactos = await contactoService.GetAllContactos();
+    }
+
+    void EditRow(Contacto contacto)
+    {
+        contactoGrid.EditRow(contacto);
+    }
+
+    async Task SaveRow(Contacto contacto)
+    {
+        await contactoService.SaveContacto(contacto);
+        contactoGrid.UpdateRow(contacto);
+    }
+
+    void CancelEdit(Contacto contacto)
+    {
+        contactoGrid.CancelEditRow(contacto);
+    }
+
+    async Task DeleteRow(Contacto contacto)
+    {
+        contactos.Remove(contacto);
+        contactoGrid.Reload();
+        await contactoService.DeleteContacto(contacto.IdContacto);
+    }
+
+    void InsertRow()
+    {
+        contactoGrid.InsertRow(new Contacto());
+    }
+
+}

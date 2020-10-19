@@ -1,0 +1,32 @@
+﻿@inject NavigationManager navigationManager
+<AuthorizeView>
+    <Authorized>
+        <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
+        
+
+        <RadzenProfileMenu Style="background-color: #f7f7f7; border:none;">
+            <Template>
+                <RadzenGravatar Email="user@example.com">
+                </RadzenGravatar>
+            </Template>
+            <ChildContent>
+                <RadzenProfileMenuItem Style="background-color: #f3f5f7;" Text="Buttons" Path="" Icon="account_circle"></RadzenProfileMenuItem>
+                <RadzenProfileMenuItem Style="background-color: #f3f5f7;" Text="Dialog" Path="" Icon="perm_media"></RadzenProfileMenuItem>
+                <RadzenProfileMenuItem  Style="background-color: #f3f5f7;" Text="Log out" Path="Identity/Account/LogOut?returnUrl=%2F" Icon="announcement" ></RadzenProfileMenuItem>
+            </ChildContent>
+        </RadzenProfileMenu>
+            
+    </Authorized>
+    <NotAuthorized>
+        <RadzenProfileMenu Style="background-color: #f7f7f7; border:none;">
+            <Template>
+                <RadzenGravatar></RadzenGravatar>
+            </Template>
+            <ChildContent>
+                <RadzenProfileMenuItem Text="Log in" Path="Identity/Account/Login" Icon="Buttons"></RadzenProfileMenuItem>
+            </ChildContent>
+        </RadzenProfileMenu>
+            <a href="Identity/Account/Register">Register</a>
+            <a href="Identity/Account/Login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
